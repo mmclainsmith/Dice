@@ -1,0 +1,15 @@
+.diceDrawer{
+        background-color: lightgrey;
+}
+
+.dice{
+        display: inline-block;
+        margin: 5px;
+        background-color: grey;
+        color: white;
+        padding: 5px;
+}
+
+.dice.selected {
+        color: darkred;
+}
