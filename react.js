@@ -1,14 +1,12 @@
 class Dice extends React.Component {
 
     diceClick = () => {
-        this.props.onSelect(this.props.sides);
+        this.props.onDiceSelect(this.props.sides);
     }
 
     render() {
         var className = "dice";
-        if (this.props.selected) {
-            className += " selected";
-        }
+        if (this.props.selected) className += " selected";
         return (
             <div className={className} onClick = {this.diceClick}>
             {this.props.sides}
@@ -17,48 +15,36 @@ class Dice extends React.Component {
     }
 }
 
-class RollOptions extends React.Component {
-
-    deselect = () => {
-        this.props.onSelect(0);
-    }
-
-    render() {
-        var options = [];
-        for (var i = 1; i < 9 ; i++) {
-            options.push(
-                <option value="{i}">{i}</option>
-            );
-        }
-        return (
-            <div>
-                <select>
-                    {options}
-                </select>
-                <div onClick = {this.deselect}> {this.props.selected} </div>
-                <input type="number" onChange = {this.props.onOptMod} />
-            </div>
-        );
-    }
-}
-
-class DiceDrawer extends React.Component {
+class Options extends React.Component {
     constructor(){
         super();
         this.state = {  selectedDice : 0,
-                        rolls        : 0,
+                        rolls        : 1,
                         mod          : 0};
     }
     diceSelection = (diceValue) => {
         this.setState({selectedDice: diceValue});
     }
 
-    optMod = (rolls, mod) => {
-        this.setState({rolls : rolls, mod : mod});
+    rollSelect = (event) => {
+        console.log(event.target);
+        this.setState({rolls : parseInt(event.target.value)});
+    }
+
+    modSelect = (event) => {
+        this.setState({mod : parseInt(event.target.value)});
     }
 
     rollClick = () => {
-        this.props.onUpdate(this.state.selectedDice, 0, 0);
+        console.log("ROLL");
+        console.log(this.state);
+        this.props.onUpdate(    this.state.selectedDice,
+                                this.state.rolls,
+                                this.state.mod);
+    }
+
+    deselect = () => {
+        this.setState({selectedDice : 0});
     }
 
     render() {
@@ -70,17 +56,38 @@ class DiceDrawer extends React.Component {
             diceOptions.push(
                 <Dice   sides={sides}
                         selected={isSelected}
-                        onSelect={this.diceSelection}/>
+                        onDiceSelect={this.diceSelection}/>
             );
         }
+
+        var options = [];
+        for (var i = 1; i < 9 ; i++) {
+            options.push(
+                <option value={i}> {i} </option>
+            );
+        }
+        var diceClassName = "dice";
+        if (this.state.selectedDice == 0) diceClassName += " empty";
+
+        var optPanel =
+            <div class="optPanel">
+                <select value={this.state.rolls} onChange={this.rollSelect}>
+                    {options}
+                </select>
+                <div className={diceClassName} onClick = {this.deselect}> {this.state.selectedDice} </div>
+                <input type="number" value={this.state.mod} onChange={this.modSelect}/>
+            </div>
+
         return (
             <div>
                 <div className="diceDrawer">{diceOptions}</div>
-                <RollOptions    selected={this.state.selectedDice}
-                                onSelect={this.diceSelection}
-                                onOptMod={this.optMod}/>
-                <div    className="button"
-                        onClick={this.rollClick}> Roll! </div>
+                {optPanel}
+                <button disabled={!this.state.selectedDice}
+                        className = "button"
+                        onClick = {this.rollClick}>
+                    Roll!
+                </button>
+
             </div>
         );
     }
@@ -89,9 +96,11 @@ class DiceDrawer extends React.Component {
 class Graph extends React.Component {
     render() {
         return (
-            <div>
-            {this.props.dice} {this.props.rolls} {this.props.mod}
-            </div>
+            <ul>
+                <li> Low: {1*this.props.rolls + this.props.mod} </li>
+                <li> Average: {this.props.dice * this.props.rolls / 2 + this.props.mod} </li>
+                <li> Hight: {this.props.dice * this.props.rolls + this.props.mod} </li>
+            </ul>
         );
     }
 }
@@ -117,11 +126,11 @@ class Board extends React.Component {
     render() {
         return (
             <div>
-                <DiceDrawer onUpdate={this.updateGraph}/>
+                <Options onUpdate={this.updateGraph}/>
 
-                <Graph  dice={this.state.graphDice}
-                        rolls={this.state.graphRolls}
-                        mod={this.state.graphMod}/>
+                <Graph dice  = {this.state.graphDice}
+                       rolls = {this.state.graphRolls}
+                       mod   = {this.state.graphMod} />
             </div>
         );
     }

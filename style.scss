@@ -1,0 +1,26 @@
+.diceDrawer{
+    background-color: lightgrey;
+}
+
+.dice{
+    display: inline-block;
+    margin: 5px;
+    background-color: grey;
+    color: white;
+    padding: 5px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    border: 3px grey solid;
+    border-radius: 1px;
+}
+
+.dice.selected {
+    box-shadow: 0 0 4px teal;
+}
+
+.dice.empty {
+    color: transparent;
+    background-color: inherit;
+    border: 3px grey dashed;
+}
